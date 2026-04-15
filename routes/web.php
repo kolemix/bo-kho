@@ -1,15 +1,23 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
+// Trang chủ
 Route::get('/', [HomeController::class, 'index']);
 
-
+// Trang Dashboard
 Route::get('/dashboard', function () {
-    //return view('dashboard');
+    return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// --- CÂU 3: CHI TIẾT SẢN PHẨM & GIỎ HÀNG ---
+Route::get('/san-pham/{id}', [ProductController::class, 'show'])->name('san-pham.show');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 
+// --- CÂU 5: TÌM KIẾM (Sửa lỗi POST bằng cách chấp nhận cả GET và POST) ---
+Route::match(['get', 'post'], '/timkiem', [ProductController::class, 'search'])->name('san-pham.search');
 
 require __DIR__.'/auth.php';
