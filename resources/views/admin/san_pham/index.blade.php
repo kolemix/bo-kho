@@ -43,28 +43,28 @@
                                 <td>{{ number_format($sp->gia_ban, 0, ',', '.') }} đ</td>
                                 <td class="text-center">
                                     @if($sp->hinh_anh)
-                                        <img src="{{ asset('storage/image/' . $sp->hinh_anh) }}" 
-                                             style="width: 50px; height: 50px; object-fit: cover;">
+                                        @php
+                                            $imagePath = public_path('storage/image/' . $sp->hinh_anh);
+                                            $imageUrl = asset('storage/image/' . $sp->hinh_anh);
+                                        @endphp
+                                        @if(file_exists($imagePath))
+                                            <img src="{{ $imageUrl }}" style="width: 50px; height: 50px; object-fit: cover;">
+                                        @else
+                                            <img src="{{ $imageUrl }}" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                                            <span class="text-muted" style="display: none;">Lỗi ảnh</span>
+                                        @endif
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    {{-- Nút Xem -> chuyển đến trang chi tiết frontend --}}
-                                    <a href="{{ route('san-pham.show', $sp->id) }}" 
-                                       class="btn btn-sm btn-primary" 
-                                       target="_blank">
+                                    <a href="{{ route('san-pham.show', $sp->id) }}" class="btn btn-sm btn-primary" target="_blank">
                                         Xem
                                     </a>
-                                    
-                                    {{-- Nút Xóa --}}
-                                    <form action="{{ route('admin.san-pham.destroy', $sp->id) }}" 
-                                          method="POST" style="display: inline;">
+                                    <form action="{{ route('admin.san-pham.destroy', $sp->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit"
-                                                onclick="return confirm('Xóa sản phẩm này?')"
-                                                class="btn btn-sm btn-danger">
+                                        <button type="submit" onclick="return confirm('Xóa sản phẩm này?')" class="btn btn-sm btn-danger">
                                             Xóa
                                         </button>
                                     </form>
@@ -86,12 +86,7 @@
                     search: "Tìm kiếm:",
                     lengthMenu: "Hiển thị _MENU_ sản phẩm",
                     info: "Hiển thị _START_ đến _END_ trong tổng _TOTAL_ sản phẩm",
-                    paginate: {
-                        first: "Đầu",
-                        last: "Cuối",
-                        next: "Sau",
-                        previous: "Trước"
-                    },
+                    paginate: { first: "Đầu", last: "Cuối", next: "Sau", previous: "Trước" },
                     zeroRecords: "Không tìm thấy sản phẩm"
                 }
             });

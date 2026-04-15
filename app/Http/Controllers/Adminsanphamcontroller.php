@@ -5,55 +5,59 @@ namespace App\Http\Controllers;
 use App\Models\SanPham;
 use App\Models\DanhMuc;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class AdminSanPhamController extends Controller
 {
-    // Câu 7 - Danh sách (chỉ status = 1, lấy tất cả)
     public function index()
     {
-        $sanPhams = SanPham::where('status', 1)->get(); // Đã sửa thành get()
+        $sanPhams = SanPham::where('status', 1)->get();
         return view('admin.san_pham.index', compact('sanPhams'));
     }
 
-    // Câu 7 - Chi tiết
-   public function show($id)
-{
-    // Redirect đến trang chi tiết frontend
-    return redirect()->route('san-pham.show', $id);
-}
+    public function show($id)
+    {
+        return redirect()->route('san-pham.show', $id);
+    }
 
-    // Câu 7 - Xóa mềm
     public function destroy($id)
     {
         $sanPham = SanPham::findOrFail($id);
         $sanPham->update(['status' => 0]);
-
-        return redirect()->route('admin.san-pham.index')
-            ->with('success', 'Xóa sản phẩm thành công!');
+        return redirect()->route('admin.san-pham.index')->with('success', 'Xóa sản phẩm thành công!');
     }
 
-    // Câu 8 - Form thêm
     public function create()
     {
         $danhMucs = DanhMuc::all();
         return view('admin.san_pham.create', compact('danhMucs'));
     }
 
-    // Câu 8 - Lưu sản phẩm mới
     public function store(Request $request)
     {
         $request->validate([
-            'code'         => 'required|unique:san_pham,code|max:50',
+            'code' => [
+                'required',
+                'max:50',
+                'regex:/^[0-9]+$/',
+                Rule::unique('san_pham', 'code')->where(function ($query) {
+                    return $query->where('status', 1);
+                }),
+            ],
             'ten_san_pham' => 'required|max:255',
-            'gia_ban'      => 'required|numeric|min:0',
-            'hinh_anh'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gia_ban'      => 'required|numeric|min:0|max:99999999.99',
+            'hinh_anh'     => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
         ], [
             'code.required'         => 'Vui lòng nhập mã sản phẩm.',
             'code.unique'           => 'Mã sản phẩm đã tồn tại.',
+            'code.regex'            => 'Mã sản phẩm chỉ được chứa số.',
             'ten_san_pham.required' => 'Vui lòng nhập tên sản phẩm.',
             'gia_ban.required'      => 'Vui lòng nhập giá bán.',
             'gia_ban.numeric'       => 'Giá bán phải là số.',
+            'gia_ban.max'           => 'Giá bán không được vượt quá 99,999,999 VNĐ.',
             'hinh_anh.image'        => 'File phải là hình ảnh.',
+            'hinh_anh.mimes'        => 'Ảnh phải có định dạng: jpg, jpeg, png, webp, gif.',
             'hinh_anh.max'          => 'Ảnh không được vượt quá 2MB.',
         ]);
 
@@ -61,8 +65,9 @@ class AdminSanPhamController extends Controller
         $tenHinhAnh = null;
         if ($request->hasFile('hinh_anh')) {
             $file = $request->file('hinh_anh');
-            $tenHinhAnh = $file->getClientOriginalName();
-            $file->storeAs('public/image', $tenHinhAnh);
+            $extension = $file->getClientOriginalExtension();
+            $tenHinhAnh = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $extension;
+            $file->move(public_path('storage/image'), $tenHinhAnh);
         }
 
         $sanPham = SanPham::create([
@@ -80,12 +85,10 @@ class AdminSanPhamController extends Controller
             'status'            => 1,
         ]);
 
-        // Gắn danh mục
         if ($request->filled('danh_muc')) {
             $sanPham->danhMucs()->attach($request->danh_muc);
         }
 
-        return redirect()->route('admin.san-pham.index')
-            ->with('success', 'Thêm sản phẩm thành công!');
+        return redirect()->route('admin.san-pham.index')->with('success', 'Thêm sản phẩm thành công!');
     }
 }

@@ -1,18 +1,16 @@
-@props(['title' => 'Trang chủ', 'categories' => []])
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title }}</title>
+    <title>{{ $title ?? 'Cây Cảnh' }}</title>
     <link rel="stylesheet" href="{{ asset('library/bootstrap.min.css') }}">
 
     <script src="{{ asset('library/jquery.slim.min.js') }}"></script>
     <script src="{{ asset('library/popper.min.js') }}"></script>
     <script src="{{ asset('library/bootstrap.bundle.min.js') }}"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="{{ asset('library/jquery-3.7.1.js') }}"></script>
+    <script src="{{ asset('library/jquery-3.7.1.js') }}" ></script>
     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css">
@@ -24,32 +22,99 @@
             padding: 0;
             font-size: 14px;
         }
-        .container { max-width: 1000px; margin: 0 auto; padding: 0 15px; }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
         .navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding:5px 0; background-color: #f5fff7; max-width:1000px;
-            font-weight:bold; margin:0 auto; border: 1px solid #d9eedd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            background-color: #f5fff7;
+            max-width: 1000px;
+            font-weight: bold;
+            margin: 0 auto;
+            border: 1px solid #d9eedd;
         }
-        .search-bar { flex: 1; max-width: 500px; margin: 0 10px; position: relative; }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 10px;
+            position: relative;
+        }
+
         .search-bar input {
-            width: 100%; padding: 5px 10px; border: none; border-radius: 20px;
-            background-color: white; border:1px solid #2f5d3a;
+            width: 100%;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 20px;
+            background-color: white;
+            border: 1px solid #2f5d3a;
         }
-        .auth-buttons .btn + .btn { margin-left: 10px; }
-        .nav-item a { color: #2f5d3a; }
-        .nav-item { padding:0 5px; }
+
+        .auth-buttons .btn + .btn {
+            margin-left: 10px;
+        }
+
+        .nav-item a {
+            color: #2f5d3a;
+        }
+
+        .nav-item {
+            padding: 0 5px;
+        }
+
         .search-btn {
-            width:40px; height: 25px; color:black; background-color:white;
-            border-radius:30px; border: none; position: absolute; right: 3px; top:3px;
+            width: 40px;
+            height: 25px;
+            color: black;
+            background-color: white;
+            border-radius: 30px;
+            border: none;
+            position: absolute;
+            right: 3px;
+            top: 3px;
         }
-        .list-cay-canh { display:grid; grid-template-columns:repeat(5,20%); }
+
+        .list-cay-canh {
+            display: grid;
+            grid-template-columns: repeat(5, 20%);
+        }
+
         .cay-canh {
-            margin:10px; text-align:center; border-radius:5px; border:1px solid #dbdbdb;
-            overflow: hidden; cursor:pointer;
+            margin: 10px;
+            text-align: center;
+            border-radius: 5px;
+            border: 1px solid #dbdbdb;
+            overflow: hidden;
+            cursor: pointer;
         }
-        .cay-canh a { color: black; text-decoration:none; }
-        .cay-canh-info { display:grid; grid-template-columns:repeat(2,30% 70%); }
+
+        .cay-canh a {
+            color: black;
+            text-decoration: none;
+        }
+
+        .cay-canh-info {
+            display: grid;
+            grid-template-columns: repeat(2, 30% 70%);
+        }
+        
+        .dropdown-menu {
+            min-width: 120px;
+        }
+        
+        .dropdown-item {
+            cursor: pointer;
+        }
     </style>
+    
+    @stack('styles')
 </head>
 <body>
     <header>
@@ -59,30 +124,32 @@
                 <div class='container-fluid p-0'>
                     <div class='col-7 p-0'>
                         <ul class="navbar-nav">
-                            @foreach($categories as $category)
+                            @foreach($categories ?? [] as $category)
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ url('caycanh/theloai/'.$category->id) }}">
-                                        {{ $category->ten_danh_muc }}
-                                    </a>
+                                    <a class="nav-link" href="{{ url('caycanh/theloai/'.$category->id) }}">{{ $category->ten_danh_muc }}</a>
                                 </li>
                             @endforeach
                         </ul>
                     </div>
                     <div class="search-bar">
                         <form method="post" action="{{ url('/timkiem') }}">
-                            @csrf
+                            {{ csrf_field() }}
                             <input type="text" name="keyword" placeholder="Tìm kiếm cây cảnh...">
                             <button class="search-btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                         </form>
                     </div>
                     <div style='color:white;position:relative' class='mr-2'>
                         <div style='width:20px; height:20px;background-color:#23b85c; font-size:12px; border:none;
-                             border-radius:50%; position:absolute;right:2px;top:-2px' id='cart-number-product'>
-                                @if (session('cart'))
-                                     {{ count(session('cart')) }}
-                                @else
-                                    0
-                                @endif
+                             border-radius:50%; position:absolute;right:2px;top:-2px; color:white; text-align:center; line-height:20px;' 
+                             id='cart-number-product'>
+                            @php
+                                $cart = session('cart', []);
+                                $totalQuantity = 0;
+                                foreach($cart as $item) {
+                                    $totalQuantity += $item['so_luong'] ?? 0;
+                                }
+                                echo $totalQuantity;
+                            @endphp
                         </div>
                         <a href="{{ url('/gio-hang') }}" style='cursor:pointer;color: #2f5d3a;'>
                             <i class="fa fa-cart-arrow-down fa-2x mr-2 mt-1" aria-hidden="true"></i>
@@ -96,7 +163,8 @@
                                     {{ Auth::user()->name }}
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="">Quản lý</a>
+                                    {{-- 👉 LINK QUẢN LÝ ĐÃ ĐƯỢC SỬA 👈 --}}
+                                    <a class="dropdown-item" href="{{ route('admin.san-pham.index') }}">Quản lý</a>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <a class="dropdown-item" onclick="event.preventDefault();
@@ -120,5 +188,7 @@
     <main class='container'>
         {{ $slot }}
     </main>
+    
+    @stack('scripts')
 </body>
 </html>

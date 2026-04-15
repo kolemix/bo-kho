@@ -21,7 +21,7 @@
 
             <div class="form-group">
                 <label style="font-weight: bold;">- Mã sản phẩm</label>
-                <input type="text" name="code" class="form-control" value="{{ old('code') }}" required>
+                <input type="text" name="code" class="form-control" value="{{ old('code') }}" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
             </div>
 
             <div class="form-group">
@@ -52,6 +52,7 @@
                     <option value="Trung bình" {{ old('do_kho') == 'Trung bình' ? 'selected' : '' }}>Trung bình</option>
                     <option value="Khó chăm sóc" {{ old('do_kho') == 'Khó chăm sóc' ? 'selected' : '' }}>Khó chăm sóc</option>
                     <option value="Rất dễ chăm sóc" {{ old('do_kho') == 'Rất dễ chăm sóc' ? 'selected' : '' }}>Rất dễ chăm sóc</option>
+                    <option value="Vừa phải" {{ old('do_kho') == 'Vừa phải' ? 'selected' : '' }}>Vừa phải</option>
                 </select>
             </div>
 
@@ -63,6 +64,7 @@
                     <option value="Nắng tán xạ" {{ old('yeu_cau_anh_sang') == 'Nắng tán xạ' ? 'selected' : '' }}>Nắng tán xạ</option>
                     <option value="Nắng trực tiếp" {{ old('yeu_cau_anh_sang') == 'Nắng trực tiếp' ? 'selected' : '' }}>Nắng trực tiếp</option>
                     <option value="Chịu được bóng râm" {{ old('yeu_cau_anh_sang') == 'Chịu được bóng râm' ? 'selected' : '' }}>Chịu được bóng râm</option>
+                    <option value="Nắng tán xạ, chịu được nắng trực tiếp" {{ old('yeu_cau_anh_sang') == 'Nắng tán xạ, chịu được nắng trực tiếp' ? 'selected' : '' }}>Nắng tán xạ, chịu được nắng trực tiếp</option>
                 </select>
             </div>
 
@@ -73,12 +75,13 @@
                     <option value="Tưới nước 2-3 lần/tuần" {{ old('nhu_cau_nuoc') == 'Tưới nước 2-3 lần/tuần' ? 'selected' : '' }}>Tưới nước 2-3 lần/tuần</option>
                     <option value="Ít nước, 2-3 lần/tuần" {{ old('nhu_cau_nuoc') == 'Ít nước, 2-3 lần/tuần' ? 'selected' : '' }}>Ít nước, 2-3 lần/tuần</option>
                     <option value="Tưới nước hằng ngày" {{ old('nhu_cau_nuoc') == 'Tưới nước hằng ngày' ? 'selected' : '' }}>Tưới nước hằng ngày</option>
+                    <option value="Thay nước 2-3 lần/tháng" {{ old('nhu_cau_nuoc') == 'Thay nước 2-3 lần/tháng' ? 'selected' : '' }}>Thay nước 2-3 lần/tháng</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label style="font-weight: bold;">- Giá bán</label>
-                <input type="number" step="0.01" name="gia_ban" class="form-control" value="{{ old('gia_ban', 0) }}" required>
+                <label style="font-weight: bold;">- Giá bán (tối đa 99,999,999 VNĐ)</label>
+                <input type="number" step="0.01" name="gia_ban" class="form-control" value="{{ old('gia_ban', 0) }}" required max="99999999.99">
             </div>
 
             <div class="form-group">
@@ -102,6 +105,7 @@
                     <span id="file-name" class="text-muted">No file selected.</span>
                     <input type="file" id="hinh_anh" name="hinh_anh" accept="image/*" style="display: none;">
                 </div>
+                <small class="text-muted">Chấp nhận: jpg, jpeg, png, webp, gif (tối đa 2MB)</small>
                 <div id="image-preview" style="margin-top: 10px; display: none;">
                     <img id="preview" src="#" style="max-width: 200px; border: 1px solid #ddd; padding: 5px;">
                 </div>
@@ -115,6 +119,12 @@
     </div>
 
     <script>
+        // Chặn nhập chữ vào mã sản phẩm
+        document.querySelector('input[name="code"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Preview ảnh
         document.getElementById('hinh_anh').addEventListener('change', function(e) {
             var file = e.target.files[0];
             var fileName = file ? file.name : 'No file selected.';

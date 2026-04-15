@@ -1,94 +1,105 @@
-<x-cay-canh-layout :title="'Giỏ hàng'" :categories="$categories">
+<x-cay-canh-layout>
+    <x-slot name="title">
+        Giỏ hàng
+    </x-slot>
+
     <div class="container mt-4">
-        
-        <h2 class="mb-4 text-custom-blue text-center">DANH SÁCH SẢN PHẨM</h2>
+        <h3 style="color: #2f5d3a;">🛒 Giỏ hàng của bạn</h3>
 
-        <table class="table table-bordered w-100">
-            <thead>
-                <tr>
-                    <th class="font-weight-bold text-dark">STT</th>
-                    <th class="font-weight-bold text-dark">Tên sản phẩm</th>
-                    <th class="font-weight-bold text-dark">Số lượng</th>
-                    <th class="font-weight-bold text-dark">Đơn giá</th>
-                    <th class="font-weight-bold text-dark">Xóa</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($cart as $index => $item)
-                    <tr>
-                        <td>{{ $index+1 }}</td>
-                        <td>{{ $item['name'] }}</td>
-                        <td>{{ $item['quantity'] }}</td>
-                        <td>{{ number_format($item['price'], 0, ',', '.') }} đ</td>
-                        <td>
-                            <form action="{{ route('cart.remove', $item['id']) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="text-center">Giỏ hàng trống</td>
-                    </tr>
-                @endforelse
-
-                {{-- Hàng tổng cộng --}}
-                <tr>
-                    <td colspan="3" class="text-center font-weight-bold">Tổng cộng</td>
-                    <td class="font-weight-bold">
-                        {{ number_format(collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']), 0, ',', '.') }} đ
-                    </td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-
-        {{-- Hình thức thanh toán --}}
-        <div class="text-center mb-3">
-            <label for="payment" class="font-weight-bold">Hình thức thanh toán</label><br>
-            <select id="payment" class="form-control w-auto d-inline-block mt-2">
-                <option value="cash">Tiền mặt</option>
-                <option value="bank">Chuyển khoản</option>
-            </select>
-        </div>
-
-        {{-- Nút đặt hàng --}}
-        <div class="text-center">
-            <form action="{{ route('cart.checkout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-custom-blue">ĐẶT HÀNG</button>
-            </form>
-        </div>
-
-        {{-- Hiển thị thông báo --}}
+        {{-- Thông báo --}}
         @if(session('success'))
-        <div class="alert alert-success text-center">
-            {{ session('success') }}
-        </div>
+            <div class="alert alert-success alert-dismissible fade show">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
         @endif
 
         @if(session('error'))
-        <div class="alert alert-danger text-center">
-            {{ session('error') }}
-        </div>
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
         @endif
 
+        @if(empty($cart))
+            <div class="text-center py-5">
+                <p class="text-muted">🛒 Giỏ hàng trống.</p>
+                <a href="{{ url('/') }}" class="btn btn-success">
+                    ← Tiếp tục mua sắm
+                </a>
+            </div>
+        @else
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>STT</th>
+                            <th>Ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php 
+                            $total = 0; 
+                            $stt = 1;
+                        @endphp
+                        
+                        @foreach($cart as $id => $item)
+                            @php 
+                                $thanhTien = $item['gia_ban'] * $item['so_luong'];
+                                $total += $thanhTien;
+                            @endphp
+                            <tr>
+                                <td>{{ $stt++ }}</td>
+                                <td>
+                                    @if(isset($item['hinh_anh']) && $item['hinh_anh'])
+                                        <img src="{{ asset('storage/image/' . $item['hinh_anh']) }}" 
+                                             style="width: 60px; height: 60px; object-fit: cover;">
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>{{ $item['ten_san_pham'] }}</td>
+                                <td>{{ $item['so_luong'] }}</td>
+                                <td>{{ number_format($item['gia_ban'], 0, ',', '.') }} đ</td>
+                                <td>{{ number_format($thanhTien, 0, ',', '.') }} đ</td>
+                                <td>
+                                    <a href="{{ route('cart.remove', $id) }}" 
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?')">
+                                        Xóa
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="5" class="text-right">Tổng cộng:</th>
+                            <th>{{ number_format($total, 0, ',', '.') }} đ</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url('/') }}" class="btn btn-outline-secondary">
+                    ← Tiếp tục mua sắm
+                </a>
+                <form action="{{ route('cart.checkout') }}" method="POST">
+                    @csrf
+                    <button type="submit" 
+                            class="btn btn-success"
+                            onclick="return confirm('Xác nhận đặt hàng?')">
+                        ✅ Đặt hàng
+                    </button>
+                </form>
+            </div>
+        @endif
     </div>
 </x-cay-canh-layout>
-
-<style>
-    .text-custom-blue {
-        color: #0066cc; 
-        font-weight: bold;
-    }
-    .btn-custom-blue {
-        background-color: #0066cc; /* xanh biển hơi đậm */
-        color: #fff;              /* chữ trắng */
-        font-weight: bold;
-    }
-    .btn-custom-blue:hover {
-        background-color: #005bb5; /* xanh đậm hơn khi hover */
-        color: #fff;
-    }
-</style>

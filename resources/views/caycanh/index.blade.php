@@ -34,23 +34,31 @@
         @if(isset($products) && count($products) > 0)
 
             @foreach($products as $p)
-                <div class="cay-canh">
-                    <img src="{{ asset('storage/image/'.$p->hinh_anh) }}" alt="{{ $p->ten_san_pham }}">
+                <a href="{{ url('/san-pham/' . $p->id) }}" style="text-decoration: none; color: inherit;">
+                    <div class="cay-canh">
+                        @if($p->hinh_anh)
+                            <img src="{{ asset('storage/image/'.$p->hinh_anh) }}" alt="{{ $p->ten_san_pham }}">
+                        @else
+                            <div style="height: 220px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <span style="color: #999;">Chưa có ảnh</span>
+                            </div>
+                        @endif
 
-                    <div class="thong-tin">
-                        <h6 class="ten-sp">
-                            {{ $p->ten_san_pham }}
-                        </h6>
+                        <div class="thong-tin">
+                            <h6 class="ten-sp">
+                                {{ $p->ten_san_pham }}
+                            </h6>
 
-                        <p class="gia-sp">
-                            {{ number_format($p->gia_ban) }} VND
-                        </p>
+                            <p class="gia-sp">
+                                {{ number_format($p->gia_ban, 0, ',', '.') }} VND
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </a>
             @endforeach
 
         @else
-            <p>Không có sản phẩm</p>
+            <p style="grid-column: 1/-1; text-align: center;">Không có sản phẩm</p>
         @endif
 
     </div>
@@ -61,7 +69,7 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 15px;
-            align-items: stretch; /* Ép tất cả các thẻ trong 1 hàng có chiều cao bằng nhau */
+            align-items: stretch;
         }
 
         /* Thẻ sản phẩm */
@@ -71,16 +79,23 @@
             overflow: hidden;
             text-align: center;
             background: white;
-            display: flex;            /* Biến thẻ thành flexbox */
-            flex-direction: column;   /* Xếp ảnh và chữ theo chiều dọc */
-            height: 100%;             /* Chiều cao phủ kín không gian grid */
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .cay-canh:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         /* Hình ảnh */
         .cay-canh img {
             width: 100%;
-            height: 220px;       /* Cố định chiều cao ảnh để đều nhau */
-            object-fit: cover;   /* Giúp ảnh bao phủ toàn bộ vùng height mà không bị méo */
+            height: 220px;
+            object-fit: cover;
         }
 
         /* Khu vực chứa tên và giá */
@@ -88,24 +103,24 @@
             padding: 15px 10px;
             display: flex;
             flex-direction: column;
-            flex-grow: 1;        /* Chiếm toàn bộ khoảng trống còn lại bên dưới ảnh */
+            flex-grow: 1;
         }
 
         /* Tên sản phẩm */
         .ten-sp {
-            font-weight: bold;   /* In đậm tên sản phẩm */
+            font-weight: bold;
             font-size: 15px;
             line-height: 1.4;
             color: #333;
-            margin-bottom: 1px; 
+            margin-bottom: 8px;
         }
 
         /* Giá sản phẩm */
         .gia-sp {
-            color: red;
+            color: #e74c3c;
             font-weight: bold;
             font-size: 16px;
-            margin-top: auto;   
+            margin-top: auto;
             margin-bottom: 0;
         }
     </style>
