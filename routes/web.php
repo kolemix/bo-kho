@@ -2,13 +2,14 @@
 
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SanPhamController;
 
-Route::get('/', [HomeController::class, 'index']);
+// Route cho trang chủ
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-
-Route::get('/dashboard', function () {
-    //return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('caycanh/theloai/{id}', function ($id) {
+    return redirect('/?category_id=' . $id);
+});
 
 
 
