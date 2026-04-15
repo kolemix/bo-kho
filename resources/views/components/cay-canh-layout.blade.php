@@ -1,16 +1,18 @@
+@props(['title' => 'Trang chủ', 'categories' => []])
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{$title}}</title>
-    <link rel="stylesheet" href="{{asset('library/bootstrap.min.css')}}">
+    <title>{{ $title }}</title>
+    <link rel="stylesheet" href="{{ asset('library/bootstrap.min.css') }}">
 
-    <script src="{{asset('library/jquery.slim.min.js')}}"></script>
-    <script src="{{asset('library/popper.min.js')}}"></script>
-    <script src="{{asset('library/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{ asset('library/jquery.slim.min.js') }}"></script>
+    <script src="{{ asset('library/popper.min.js') }}"></script>
+    <script src="{{ asset('library/bootstrap.bundle.min.js') }}"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="{{asset('library/jquery-3.7.1.js')}}" ></script>
+    <script src="{{ asset('library/jquery-3.7.1.js') }}"></script>
     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css">
@@ -21,114 +23,54 @@
             margin: 0;
             padding: 0;
             font-size: 14px;
-        
         }
-
-        .container {
-            max-width: 1000px; /* Chiều rộng tối đa của nội dung */
-            margin: 0 auto; /* Căn giữa nội dung */
-            padding: 0 15px;
-        }
-
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 15px; }
         .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding:5px 0;
-            background-color: #f5fff7;
-            max-width:1000px;
-            font-weight:bold;
-            margin:0 auto;
-            border: 1px solid #d9eedd;
+            display: flex; justify-content: space-between; align-items: center;
+            padding:5px 0; background-color: #f5fff7; max-width:1000px;
+            font-weight:bold; margin:0 auto; border: 1px solid #d9eedd;
         }
-
-
-        .search-bar {
-            flex: 1; /* Chiếm không gian còn lại */
-            max-width: 500px;
-            margin: 0 10px;
-            
-            position: relative;
-        }
-
+        .search-bar { flex: 1; max-width: 500px; margin: 0 10px; position: relative; }
         .search-bar input {
-            width: 100%;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 20px;
-            background-color: white;
-            border:1px solid #2f5d3a;
+            width: 100%; padding: 5px 10px; border: none; border-radius: 20px;
+            background-color: white; border:1px solid #2f5d3a;
         }
-
-        .auth-buttons .btn + .btn {
-            margin-left: 10px;
+        .auth-buttons .btn + .btn { margin-left: 10px; }
+        .nav-item a { color: #2f5d3a; }
+        .nav-item { padding:0 5px; }
+        .search-btn {
+            width:40px; height: 25px; color:black; background-color:white;
+            border-radius:30px; border: none; position: absolute; right: 3px; top:3px;
         }
-        .nav-item a
-        {
-            color: #2f5d3a;
+        .list-cay-canh { display:grid; grid-template-columns:repeat(5,20%); }
+        .cay-canh {
+            margin:10px; text-align:center; border-radius:5px; border:1px solid #dbdbdb;
+            overflow: hidden; cursor:pointer;
         }
-        .nav-item
-        {
-            padding:0 5px;
-        }
-
-        .search-btn
-        {
-            width:40px; 
-            height: 25px;
-            color:black; 
-            background-color:white;
-            border-radius:30px;
-            border: none;
-            position: absolute;
-            right: 3px;
-            top:3px;
-        }
-
-        .list-cay-canh
-        {
-            display:grid;
-            grid-template-columns:repeat(5,20%);
-        }
-        .cay-canh
-        {
-            margin:10px;
-            text-align:center;
-            border-radius:5px;
-            border:1px solid #dbdbdb;
-            overflow: hidden;
-            cursor:pointer;
-        }
-        .cay-canh a
-        {
-            color: black;
-            text-decoration:none;
-        }
-        .cay-canh-info
-        {
-            display:grid;
-            grid-template-columns:repeat(2,30% 70%);
-        }
+        .cay-canh a { color: black; text-decoration:none; }
+        .cay-canh-info { display:grid; grid-template-columns:repeat(2,30% 70%); }
     </style>
 </head>
 <body>
     <header>
         <div style='text-align:center; max-width:1000px; margin:0 auto'>
-            <img src="{{asset('images/banner.png')}}" width="1000px">
+            <img src="{{ asset('images/banner.png') }}" width="1000px">
             <nav class="navbar navbar-light navbar-expand-sm">
                 <div class='container-fluid p-0'>
                     <div class='col-7 p-0'>
                         <ul class="navbar-nav">
                             @foreach($categories as $category)
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{url('caycanh/theloai/'.$category->id)}}">{{$category->ten_danh_muc}}</a>
+                                    <a class="nav-link" href="{{ url('caycanh/theloai/'.$category->id) }}">
+                                        {{ $category->ten_danh_muc }}
+                                    </a>
                                 </li>
                             @endforeach
                         </ul>
                     </div>
                     <div class="search-bar">
-                        <form method="post" action="{{url('/timkiem')}}">
-                            {{ csrf_field() }}
+                        <form method="post" action="{{ url('/timkiem') }}">
+                            @csrf
                             <input type="text" name="keyword" placeholder="Tìm kiếm cây cảnh...">
                             <button class="search-btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                         </form>
@@ -142,7 +84,7 @@
                                     0
                                 @endif
                         </div>
-                        <a href="{{url('/gio-hang')}}" style='cursor:pointer;color: #2f5d3a;;'>
+                        <a href="{{ url('/gio-hang') }}" style='cursor:pointer;color: #2f5d3a;'>
                             <i class="fa fa-cart-arrow-down fa-2x mr-2 mt-1" aria-hidden="true"></i>
                         </a>
                     </div>
@@ -151,15 +93,15 @@
                         @auth
                             <div class="dropdown">
                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-                                {{ Auth::user()->name }}
+                                    {{ Auth::user()->name }}
                                 </button>
                                 <div class="dropdown-menu">
-                                <a class="dropdown-item" href="">Quản lý</a>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <a class="dropdown-item" onclick="event.preventDefault();
-                                                        this.closest('form').submit();">Đăng xuất</a>
-                                </form>
+                                    <a class="dropdown-item" href="">Quản lý</a>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <a class="dropdown-item" onclick="event.preventDefault();
+                                                            this.closest('form').submit();">Đăng xuất</a>
+                                    </form>
                                 </div>
                             </div>
                         @else
@@ -170,13 +112,13 @@
                                 <button class='btn btn-sm btn-success'>Đăng ký</button>
                             </a>
                         @endauth
+                    </div>
                 </div>
             </nav>
         </div>
     </header>
     <main class='container'>
-        {{$slot}}
+        {{ $slot }}
     </main>
-
 </body>
 </html>

@@ -1,47 +1,99 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<x-cay-canh-layout :title="'Đăng nhập tài khoản'">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+                {{-- Logo cây cảnh --}}
+                <div class="text-center mb-4">
+                    <h1 class="logo-text">
+                        🍃 ५ꪇ <span class="flipped-leaf">🍃</span>
+                    </h1>
+                </div>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                <div class="card">
+                    <div class="card-header text-center font-weight-bold text-custom-green">
+                        Đăng nhập tài khoản
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Hiển thị trạng thái session -->
+                        <x-auth-session-status class="mb-4" :status="session('status')" />
+
+                        <form method="POST" action="{{ route('login') }}">
+                            @csrf
+
+                            <!-- Email -->
+                            <div class="form-group">
+                                <label for="email">Địa chỉ Email</label>
+                                <input id="email" type="email" class="form-control" name="email"
+                                       :value="old('email')" required autofocus autocomplete="username">
+                                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                            </div>
+
+                            <!-- Mật khẩu -->
+                            <div class="form-group mt-3">
+                                <label for="password">Mật khẩu</label>
+                                <input id="password" type="password" class="form-control" name="password"
+                                       required autocomplete="current-password">
+                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                            </div>
+
+                            <!-- Ghi nhớ đăng nhập -->
+                            <div class="form-group mt-3">
+                                <label for="remember_me" class="inline-flex items-center">
+                                    <input id="remember_me" type="checkbox"
+                                           class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500"
+                                           name="remember">
+                                    <span class="ms-2 text-sm text-gray-600">Ghi nhớ đăng nhập</span>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between mt-4">
+                                @if (Route::has('password.request'))
+                                    <a class="underline text-sm text-gray-600 hover:text-gray-900"
+                                       href="{{ route('password.request') }}">
+                                        Quên mật khẩu?
+                                    </a>
+                                @endif
+
+                                <button type="submit" class="btn btn-custom-green">
+                                    Đăng nhập
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
         </div>
+    </div>
+</x-cay-canh-layout>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+<style>
+    .logo-text {
+        font-family: 'Brush Script MT', cursive;
+        font-size: 48px;
+        color: #228B22;
+        text-shadow: 2px 2px 4px #aaa;
+        letter-spacing: 2px;
+    }
+    .flipped-leaf {
+        display: inline-block;
+        transform: scaleX(-1); /* lật ngược lá bên phải */
+    }
+    .text-custom-green {
+        color: #228B22;
+        font-weight: bold;
+    }
+    .btn-custom-green {
+        background-color: #228B22;
+        color: #fff;
+        font-weight: bold;
+        padding: 6px 20px;
+        border-radius: 4px;
+    }
+    .btn-custom-green:hover {
+        background-color: #1e7b1e;
+        color: #fff;
+    }
+</style>
